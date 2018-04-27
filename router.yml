@@ -3,7 +3,8 @@ kernel:
   cmdline: "console=tty0 console=ttyS0,115200 console=ttyS1"
 init:
   - linuxkit/init:v0.3
-  - linuxkit/firmware-all:v0.3
+  # - linuxkit/firmware-all:v0.3
+  - hairyhenderson/firmware-ath10k:dev-amd64
   - linuxkit/runc:v0.3
   - linuxkit/containerd:v0.3
   - linuxkit/ca-certificates:v0.3
@@ -28,7 +29,9 @@ services:
   - name: dhcpcd
     image: linuxkit/dhcpcd:v0.3
   - name: sshd
-    image: linuxkit/sshd:v0.3
+    image: hairyhenderson/sshd:dev-amd64
+    # mounts:
+      # - /root/.profile:/root/.profile
   - name: ntpd
     image: linuxkit/openntpd:v0.3
   - name: wpa_supplicant

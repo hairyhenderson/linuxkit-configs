@@ -1,9 +1,20 @@
 FWURL := https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree
 FWPATH := firmware/ath10k/QCA988X/hw2.0
 SD_DEV ?= /dev/rdisk2
+ORG ?= hairyhenderson
 
 images/:
 	mkdir -p $@
+
+pkg/%: pkg/%/*
+	@linuxkit pkg build \
+		-disable-content-trust \
+		-dev \
+		-network \
+		-org $(ORG) \
+		-hash-path . \
+		$@
+	@touch $@
 
 wpa_supplicant.conf: wpa_supplicant.conf.tmpl wifi-config.yml
 	@gomplate -d wifi-config.yml -f $< -o $@
@@ -11,12 +22,12 @@ wpa_supplicant.conf: wpa_supplicant.conf.tmpl wifi-config.yml
 images/boot.ipxe: images/router-initrd.img boot.ipxe
 	@gomplate -d cmdline=./images/router-cmdline -f boot.ipxe -o images/boot.ipxe
 
-images/router-bios.img: router.yml wpa_supplicant.conf images/
-	linuxkit build -format raw-bios dir images $<
+images/router-bios.img: router.yml wpa_supplicant.conf images/ pkg/*
+	linuxkit build -pull=false -format raw-bios dir images $<
 
 #$(FWPATH)/board.bin $(FWPATH)/firmware-4.bin $(FWPATH)/firmware-5.bin
-images/router-initrd.img: router.yml wpa_supplicant.conf images/
-	linuxkit build -format kernel+initrd -dir images $<
+images/router-initrd.img: router.yml wpa_supplicant.conf images/ pkg/*
+	linuxkit build -pull=false -format kernel+initrd -dir images $<
 
 clean:
 	-rm -f wpa_supplicant.conf
@@ -28,4 +39,4 @@ sd: router-bios.img
 ipxe: images/router-initrd.img images/boot.ipxe
 	linuxkit serve -directory images/
 
-.PHONY: clean sd
+.PHONY: clean sd ipxe
