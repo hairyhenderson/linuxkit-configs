@@ -1,0 +1,8 @@
+#!ipxe
+
+dhcp
+set base-url http://{{ sockaddr.GetInterfaceIP "en0" }}:8080
+set kernel-params ip=dhcp nomodeset ro serial console=ttyS0,115200 {{ include "cmdline" }}
+kernel ${base-url}/router-kernel ${kernel-params}
+initrd ${base-url}/router-initrd.img
+boot

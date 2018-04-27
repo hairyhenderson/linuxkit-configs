@@ -1,0 +1,10 @@
+{{ $w := (ds "wifi-config") -}}
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country={{ $w.country }}
+
+network={
+  ssid="{{ $w.ssid }}"
+  psk={{ crypto.WPAPSK $w.ssid $w.psk }}
+  key_mgmt=WPA-PSK
+}

@@ -1,0 +1,4 @@
+./images/
+./firmware/
+wifi-config.yml
+wpa_supplicant.conf
