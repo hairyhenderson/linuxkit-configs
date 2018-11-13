@@ -1,2 +1,2 @@
-FROM linuxkit/sshd:v0.3
+FROM linuxkit/sshd:v0.6
 COPY sshd_config /etc/ssh/sshd_config
